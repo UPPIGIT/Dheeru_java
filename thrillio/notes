@@ -1,0 +1,108 @@
+#Implementing managers
+
+* Managers have business logic
+We need to write some methods that will instantiate the entities we just created.
+The methods we write will be used in the data store which will be written later.
+
+*We will write the User manager and Bookmark manager.
+User manager will have business logic related to users. While Bookmark manager will do the same for Bookmarks.
+
+Manager classes are stateless and maintain no instance variables. We can maintain them as static utility classes.
+However for managers it is recommended to instead create just one single instance of each of the manager classes. The reason is that managers can need to implement interfaces and i\
+n those instances, you cannot use a static utility class as static methods in that class cannot hide or overwite instance methods in an interface. So the recommended way is to crea\
+te a single instance of the manager class.
+This is achieved by using a design pattern called a Singleton pattern
+
+##Singleton pattern
+
+Is a design pattern that ensures that only one object is created and no more. Singleton pattern also provides a global point to access the object. So manager classes are basically \
+Singletons
+One way to implement it is to:
+1.  create a private static instance variable of the class
+2.  create a public static getInstance() method which returns a reference to the above instance
+
+One we get the instance, we can run all non-static methods inherited from interfaces and can even override them.
+
+#Constant exporting classes
+* These are classes that exist only for defining constants eg fields like genre or gender have a range of values. The same is true for the userType field. The constant exporting cl\
+asses will be useful when we have to check if a field has a particular value.
+
+#Implementing Data store
+Creating our "database" in a data store (a class called DataStore)
+
+#Implementing Data Access Objects (DAOs)
+Code that fetches data from database or other data stores. In our case, since we do not have a database, our methods will be calling on the getter methods in the DataStore class
+In Model-View-Controller architecture, controllers will invoke managers and managers will invoke data access objects. 
+This was implemented by:
+ 1. creating unique DAOs for the two types of classes in our system -> Users & Bookmarks (a UserDao and a BookmarkDao). 
+ 	- These DAO classes will contain methods for interacting with the data layer
+ 	- inside these DAOs, we add getter methods for the types of objects they request. eg in UserDao, we have a getUsers() method
+ 2. adding getter methods inside the DAOs
+ 3. now that the DAOs are set, we now look at updating our managers. 
+ The controller will in the future be requesting data through the managers so lets make methods in managers for handling such requests.
+  create methods in our managers for interacting with the DAOs.
+  
+  # Project Status And Launching
+  So far we have implemented the model and the datastore. We are yet to implement the view and the controller. 
+  To launch our application, we need to write a separate program that would:
+  1. load our data - all our entities -> users & bookmarks
+  2. invoke the different steps in the controller and view.
+  
+  Now we focus on writing our launcher program and use it to load the data and see if everything we have written is working so far.
+  Since this program is a launcher, it must have the main() method which is the entry point for running the program.
+  The Launcher class will run scripts to load the data store then print out the contents to the console. In printing the objects,
+  there is an easy way to overide the inherited toString() method using Eclipse: Source->Generate toString...
+  
+  #Implementing the User Bookmarking Feature
+  Simulate the user bookmarking process. Each user will be associated with 5 random bookmarks(duplicates included for now)
+  1. create new class View to mimick UI actions taken by a user in a real application
+  2. Methods in this class will be invoked from the Launch class
+  
+  #Implementing a feature using TDD
+  Here we are implementing the kid friendly() eligible feature. Thrill.io would like to have a separate tab on the homepage just for kids. 
+  So on this page we would only like to have kid-friendly content. Only Editors can mark eligible bookmarks as kid-friendly.
+  For now here are the rules for our method:
+   - if a Movie is of the genre "Horror" or "Thriller", it should return false
+   - if a Book is of the genre "Philosophy" or "Self help", it should return false
+   - Should return false if website is an "Adult" site
+   
+   We will follow Test-driven Development:
+   Add a Test -> Update Code to pass test -> Refactor and Repeat tests
+   Benefits of TDD:
+   - ensures program correctness at all points of time
+   - improves programmer's confidence
+   - can also help you to better design your methods as TDD forces you to think through test scenarios that your application could encounter
+   - in our application, we create a test folder/ on the same level as our source folder src/. Inside our test/ folder, we make an identical package, with an identical name to the one we want to test.
+   - inside of the package we make our JUnit test cases:
+   1. Select the package
+   2. Right click and select New -> JUnit Test Case
+   3. Put in the name of the test - convention is that if you are testing the Book class, the test case should be called BookTest
+   4. Specify the Class Under Test
+   5. Click Next then select the methods you would like to write tests for
+   6. Click Finish (if you get a popoup about adding JUnit to the path, click Ok)
+   7. Inside your test class, import import static org.junit.Assert.* (Eclipse can do this for you)
+   8. Write your test cases using the assertTrue(logical expression, "Statement to print if it logical expression is FALSE"), or assertFalse(logical expression, "Statement to print if expression is TRUE")
+   
+   # Implementing the approval status of KidFriendlyEligible bookmarks
+   - A new field was added to the Bookmark class called kidFriendlyStatus to indicate whether a bookmark has been "approved", "rejected" or is "unknown" by an editor.
+   Given that we have a fixed range of values for kidFriendlyStatus, it is a good idea to implement a constant exporting class for those values so that in the future, if we need to change anything, we just change it in the constant exporting class. 
+   
+   #Using an Interface & implementing the Sharing feature (with constraints)
+ - we want to share kid-friendly bookmarks with partner websites. The constraint being that only books or weblinks can be shared.
+ - so we are implementing optional capabilities to select classes.
+ - we will be creating XML strings that will be shared with the partner. 
+ - since our objects have many fields, we will want to build Strings piece by piece as we join the XML. We know that String concatenation is expensive and slow (due to inherent switching between Strings and StringBuilder instances) so we will use StringBuilder off the bat.
+  and finally return a String object once concatenation is complete. StringBuilder has the advantage of offering mutable StringBuilder objects. An alternative is StringBuffer but it is slower.
+  - we also used an external package from the Apache Commons Lang [StringUtils class' join function]
+  - getting external excecutable JARs:
+  1. Go to the website or source and download the Binaries.
+  2. Open them and go into the folder and find the necessary .jar file
+  3. Copy this JAR file into a folder where you keep all useful JAR files
+  4. Go to your application in Eclipse and right-click on it
+  5. Select Properties -> Java Build Path
+  6. Click on the Libraries tab and click Add External JARs
+  7. Select your JAR file and click Apply and Close
+  
+  #Implementing Sharing feature part 2
+  
+  
